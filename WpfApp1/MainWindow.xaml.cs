@@ -82,28 +82,15 @@ namespace WpfApp1
         public MainWindow()
         {
             this.DataContext = this;
-            this.StartY = "2020";
-            this.Eclipses = new BindableCollection<Eclipse>(EclipseList);
             InitializeTypeDropdownOptions();
             InitializeRegionDropdownOptions();
+            InitializeStartYearDropdownOptions();
             this.TypeDropdownOptions = new BindableCollection<DropdownOption>(TypeOptionsList);
             this.RegionDropdownOptions = new BindableCollection<DropdownOption>(RegionOptionsList);
+            this.StartYearDropdownOptions = new BindableCollection<DropdownOption>(StartYearOptionsList);
+            this.Eclipses = new BindableCollection<Eclipse>(EclipseList);
+            SetDefaults();
             InitializeComponent();
-        }
-
-        private string _startY;
-        public string StartY
-        {
-            get { return _startY; }
-            set
-            {
-                if (value != _startY)
-                {
-                    _startY = value;
-                    PropertyChanged?.Invoke(this, new
-                    PropertyChangedEventArgs(nameof(StartY)));
-                }
-            }
         }
 
         private List<Eclipse> _eclipsesList = new List<Eclipse>();
@@ -148,6 +135,20 @@ namespace WpfApp1
                 _selectedRegion = value;
             }
         }
+
+        public BindableCollection<DropdownOption> StartYearDropdownOptions { get; set; }
+        private List<DropdownOption> StartYearOptionsList = new List<DropdownOption>();
+
+        private DropdownOption _selectedStartYear;
+
+        public DropdownOption SelectedStartYear
+        {
+            get { return _selectedStartYear; }
+            set
+            {
+                _selectedStartYear = value;
+            }
+        }
         public event PropertyChangedEventHandler PropertyChanged;
 
         private void InitializeTypeDropdownOptions()
@@ -176,12 +177,27 @@ namespace WpfApp1
             this.RegionOptionsList.Add(new DropdownOption() { Label = "North America", Value = "north-america" });
             this.RegionOptionsList.Add(new DropdownOption() { Label = "Pacific", Value = "pacific" });
             this.RegionOptionsList.Add(new DropdownOption() { Label = "South America", Value = "south-america" });
+        }
 
+        private void InitializeStartYearDropdownOptions()
+        {
+            for (int startY=1900; startY< 2200; startY += 10)
+            {
+                String v = startY.ToString();
+                String l = startY.ToString() + "-" + (startY + 9).ToString();
+                this.StartYearOptionsList.Add(new DropdownOption() { Label = l, Value = v });
+            }
+        }
 
+        private void SetDefaults()
+        {
+            this.SelectedType = TypeOptionsList[0];
+            this.SelectedRegion = RegionOptionsList[0];
+            this.SelectedStartYear = StartYearOptionsList[0];
         }
         private void getListButton_Click(object sender, RoutedEventArgs e)
         {
-            List<Eclipse> output = DataAccess.BuildUrlAndGetEclipses(SelectedRegion.Value, StartY, SelectedType.Value);
+            List<Eclipse> output = DataAccess.BuildUrlAndGetEclipses(SelectedRegion.Value, SelectedStartYear.Value, SelectedType.Value);
             EclipseList = output;
             Eclipses.Clear();
             EclipseList.ForEach(ecl => Eclipses.Add(ecl));
