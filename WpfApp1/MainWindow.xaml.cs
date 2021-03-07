@@ -16,6 +16,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.IO;
+
+
 
 public class DropdownOption
 {
@@ -31,6 +34,11 @@ public class Eclipse
     {
         this.Type = t;
         this.Date = d;
+    }
+
+    public override String ToString()
+    {
+        return this.Date + " " + this.Type;
     }
 }
 public class DataAccess
@@ -73,6 +81,20 @@ public class DataAccess
     {
         var url = "http://www.timeanddate.com/eclipse/list.html?region=" + region + "&starty=" + starty + "&type=" + type;
         return GetEclipses(url);
+    }
+
+    public static void DownloadContent(List<Eclipse> content,String filePath )
+    {
+
+        string[] lines = new string[100];
+        content.ForEach(ecl => lines.Append(ecl.ToString()));
+        using (StreamWriter writer = new StreamWriter(filePath))
+        {
+            content.ForEach(ecl =>
+            {
+                writer.WriteLine(ecl.ToString());
+            });
+        }
     }
 }
 namespace WpfApp1
@@ -205,8 +227,22 @@ namespace WpfApp1
         }
         private void testButton_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show(SelectedType.Value + " " + SelectedRegion.Value);
-            
+            //MessageBox.Show(SelectedType.Value + " " + SelectedRegion.Value);
+            Microsoft.Win32.SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog();
+            dlg.FileName = "eclipses-WPF";
+            dlg.DefaultExt = ".txt";
+            // dlg.Filter = "Image file (*.png) | *.png"; // Filter files by extension
+            Nullable<bool> result = dlg.ShowDialog();
+
+            if (result == true)
+            {
+
+                dlg.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+                DataAccess.DownloadContent(EclipseList, dlg.FileName);
+                string filename = dlg.FileName;
+            }
+
+
         }
     }
 }
