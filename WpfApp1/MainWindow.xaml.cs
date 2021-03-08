@@ -30,15 +30,18 @@ public class Eclipse
     public String Type { get; set; }
     public String Date { get; set; }
 
-    public Eclipse(String t, String d)
+    public String Visibility { get; set; }
+
+    public Eclipse(String t, String d, String v)
     {
         this.Type = t;
         this.Date = d;
+        this.Visibility = v;
     }
 
     public override String ToString()
     {
-        return this.Date + " " + this.Type;
+        return this.Date + " " + this.Type + " " + this.Visibility;
     }
 }
 public class DataAccess
@@ -66,10 +69,11 @@ public class DataAccess
         foreach (var link in links)
         {
             String href = link.GetAttributeValue("href", "");
+            var type = link.SelectSingleNode("//span[@class='ec-type']").InnerText;
+            var visibility = link.SelectSingleNode("//span[@class='ec-where']").InnerText;
             string[] splitted = href.Split('/');
-            var type = splitted[2];
             var date = splitted[3];
-            Eclipse ecl = new Eclipse(type, date);
+            Eclipse ecl = new Eclipse(type, date, visibility);
             // var splitted_date = date.Split("-");
             eclipses.Add(ecl);
 
@@ -134,6 +138,7 @@ namespace WpfApp1
             SetDefaults();
             InitializeComponent();
             DisableDownloadButtonOnInit();
+            HideTableOnInit();
         }
 
         public bool isDownloadButtonEnabled = false;
@@ -247,6 +252,10 @@ namespace WpfApp1
         {
             downloadButton.IsEnabled = false;
         }
+        private void HideTableOnInit()
+        {
+            eclipsesTable.Visibility= Visibility.Hidden;
+        }
         private void getListButton_Click(object sender, RoutedEventArgs e)
         {
             List<Eclipse> output = DataAccess.BuildUrlAndGetEclipses(SelectedRegion.Value, SelectedStartYear.Value, SelectedType.Value);
@@ -254,6 +263,7 @@ namespace WpfApp1
             Eclipses.Clear();
             EclipseList.ForEach(ecl => Eclipses.Add(ecl));
             downloadButton.IsEnabled = true;
+            eclipsesTable.Visibility = Visibility.Visible;
         }
         private string prepareString(string s)
         {

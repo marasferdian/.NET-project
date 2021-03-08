@@ -8,7 +8,7 @@
         FontSize="18"
         FontFamily="Segoe UI Light"
         x:Name="mainWindow"
-        Title=".NET project" Height="350" Width="700">
+        Title=".NET project" Height="500" Width="1000">
     <ScrollViewer HorizontalScrollBarVisibility="Visible">
         <Grid>
             <Grid.ColumnDefinitions>
@@ -58,17 +58,9 @@
             </ComboBox>
             <Button x:Name="getListButton" Grid.Column="2" Grid.Row="6" Width="60" Height="20" FontSize="12" HorizontalAlignment="Center" Click="getListButton_Click">Get list!</Button>
             <Button x:Name="downloadButton" Grid.Column="3" Grid.Row="6" Width="60" Height="20" FontSize="12" HorizontalAlignment="Center" Click="downloadButton_Click" >Download</Button>
-            <ItemsControl Margin="20,5" Grid.Column ="4" Grid.Row="2" Grid.ColumnSpan="2" Grid.RowSpan="5" ItemsSource="{Binding ElementName=mainWindow, Path=Eclipses}">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="{Binding Date}"/>
-                            <TextBlock Text=" "/>
-                            <TextBlock Text="{Binding Type}"/>
-                        </StackPanel>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
+
+            <DataGrid  FontSize="13" Width="800" Margin="20,5" Grid.Column ="4" Grid.Row="2" Grid.ColumnSpan="4" Grid.RowSpan="5" ItemsSource="{Binding ElementName=mainWindow, Path=Eclipses}" Name="eclipsesTable">
+            </DataGrid>
         </Grid>
     </ScrollViewer>
 </Window>
