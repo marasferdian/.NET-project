@@ -79,7 +79,27 @@ public class DataAccess
 
     public static List<Eclipse> BuildUrlAndGetEclipses(String region, String starty, String type)
     {
-        var url = "http://www.timeanddate.com/eclipse/list.html?region=" + region + "&starty=" + starty + "&type=" + type;
+        var url = "";
+        if (region == "" && type == "" && starty=="")
+        {
+            url = "http://www.timeanddate.com/eclipse/list.html";
+        }
+         else if (region == "" && type == "")
+        {
+            url = "http://www.timeanddate.com/eclipse/list.html?starty=" + starty;
+        }
+        else if (region == "" && type != "")
+        {
+            url = "http://www.timeanddate.com/eclipse/list-"+ type +".html?starty=" + starty;
+        }
+        else if (type == "")
+        {
+            url = "http://www.timeanddate.com/eclipse/list.html?region=" + region + "7starty=" + starty;
+        }
+        else
+        {
+            url = "http://www.timeanddate.com/eclipse/list.html?region=" + region + "&starty=" + starty + "&type=" + type;
+        }
         return GetEclipses(url);
     }
 
@@ -113,8 +133,10 @@ namespace WpfApp1
             this.Eclipses = new BindableCollection<Eclipse>(EclipseList);
             SetDefaults();
             InitializeComponent();
+            DisableDownloadButtonOnInit();
         }
 
+        public bool isDownloadButtonEnabled = false;
         private List<Eclipse> _eclipsesList = new List<Eclipse>();
         public BindableCollection<Eclipse> Eclipses { get; set; }
         public List<Eclipse> EclipseList
@@ -175,6 +197,7 @@ namespace WpfApp1
 
         private void InitializeTypeDropdownOptions()
         {
+            this.TypeOptionsList.Add(new DropdownOption() { Label = "All Eclipses", Value = "" });
             this.TypeOptionsList.Add(new DropdownOption() { Label= "Solar Eclipses", Value= "solar" });
             this.TypeOptionsList.Add(new DropdownOption() { Label = "Lunar Eclipses", Value = "lunar" });
             this.TypeOptionsList.Add(new DropdownOption() { Label = "Total Solar Eclipses", Value = "total-solar" });
@@ -189,6 +212,7 @@ namespace WpfApp1
 
         private void InitializeRegionDropdownOptions()
         {
+            this.RegionOptionsList.Add(new DropdownOption() { Label = "Worldwide", Value = "" });
             this.RegionOptionsList.Add(new DropdownOption() { Label = "Africa", Value = "africa" });
             this.RegionOptionsList.Add(new DropdownOption() { Label = "Asia", Value = "asia" });
             this.RegionOptionsList.Add(new DropdownOption() { Label = "Atlantic", Value = "atlantic" });
@@ -203,6 +227,7 @@ namespace WpfApp1
 
         private void InitializeStartYearDropdownOptions()
         {
+            this.StartYearOptionsList.Add(new DropdownOption() { Label = "Next 10 years", Value = "" });
             for (int startY=1900; startY< 2200; startY += 10)
             {
                 String v = startY.ToString();
@@ -217,21 +242,37 @@ namespace WpfApp1
             this.SelectedRegion = RegionOptionsList[0];
             this.SelectedStartYear = StartYearOptionsList[0];
         }
+
+        private void DisableDownloadButtonOnInit()
+        {
+            downloadButton.IsEnabled = false;
+        }
         private void getListButton_Click(object sender, RoutedEventArgs e)
         {
             List<Eclipse> output = DataAccess.BuildUrlAndGetEclipses(SelectedRegion.Value, SelectedStartYear.Value, SelectedType.Value);
             EclipseList = output;
             Eclipses.Clear();
             EclipseList.ForEach(ecl => Eclipses.Add(ecl));
-            
+            downloadButton.IsEnabled = true;
         }
-        private void testButton_Click(object sender, RoutedEventArgs e)
+        private string prepareString(string s)
+        {
+            return s.Replace(" ", "_").ToLower();
+        }
+        private string getFileName()
+        {
+            var trimmedRegion = prepareString(SelectedRegion.Label);
+            var trimmedYear = prepareString(SelectedStartYear.Label);
+            var trimmedType = prepareString(SelectedType.Label);
+            string name = "eclipses-" + trimmedType + "-" + trimmedYear + "-" + trimmedRegion;
+            return name;
+        }
+        private void downloadButton_Click(object sender, RoutedEventArgs e)
         {
             //MessageBox.Show(SelectedType.Value + " " + SelectedRegion.Value);
             Microsoft.Win32.SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog();
-            dlg.FileName = "eclipses-WPF";
+            dlg.FileName = getFileName();
             dlg.DefaultExt = ".txt";
-            // dlg.Filter = "Image file (*.png) | *.png"; // Filter files by extension
             Nullable<bool> result = dlg.ShowDialog();
 
             if (result == true)
