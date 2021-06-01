@@ -75,6 +75,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Model\DataAccess.cs" />
+    <Compile Include="Model\DropdownOption.cs" />
+    <Compile Include="Model\Eclipse.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

@@ -31,7 +31,7 @@
                 <RowDefinition Height="*" />
                 <RowDefinition Height="20" />
             </Grid.RowDefinitions>
-            <TextBlock Grid.Column="1" Grid.Row="1" FontSize="22" Grid.ColumnSpan ="2" FontWeight="ExtraBlack" Text="Eclipses around the world"/>
+            <TextBlock Grid.Column="1" Grid.Row="1" FontSize="22" Grid.ColumnSpan ="2" FontWeight="ExtraBlack" Text="Eclipses around the world" Foreground="#FFFFFF"/>
             <TextBlock Margin="0,20" FontSize="14" Grid.Column="1" Grid.Row="3">Type</TextBlock>
             <ComboBox FontSize="14" Grid.Row="3" Grid.Column="2" Width="130" Height="30" HorizontalAlignment="Left" ItemsSource="{Binding ElementName=mainWindow, Path=TypeDropdownOptions}" SelectedItem="{Binding ElementName=mainWindow, Path=SelectedType}">
                 <ComboBox.ItemTemplate>
